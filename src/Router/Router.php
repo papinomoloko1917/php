@@ -17,12 +17,18 @@ class Router
     {
         foreach ($this->routes as $route) {
             if ($route['route'] === $uri) {
-                require_once $this->basePath . $route['file_path'];
+                $this->render($route['file_path']);
                 return;
             }
         }
 
         http_response_code(404);
         echo 'Страница не найдена';
+    }
+
+    public function render(string $filePath)
+    {
+        $page = $this->basePath . $filePath;
+        require_once $this->basePath . '/layout/app.layout.php';
     }
 }
