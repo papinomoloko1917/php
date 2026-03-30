@@ -6,5 +6,5 @@ class Router
 {
     private array $routes = [];
 
-    public function resolve() {}
+    public function resolve($url, $pageDir) {}
 }
