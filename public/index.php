@@ -1,8 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../bootstrap/app.php';
 
 use App\App;
+use App\Router\Router;
 
-$app = new App();
+$app = new App(new Router());
+
 $app->run();

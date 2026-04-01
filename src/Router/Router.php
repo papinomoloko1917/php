@@ -4,12 +4,15 @@ namespace App\Router;
 
 class Router
 {
-    private array $routes = [];
-
-    public function __construct()
-    {
-        $this->routes = include_once dirname(__DIR__) . '/routes/routes.php';
+  public function resolve(string $url, array $routes)
+  {
+    foreach ($routes as $route) {
+      if ($url === $route['url']) {
+        include __DIR__ . '/../../public/pages/' . $route['filePath'];
+        exit;
+      }
     }
-
-    public function resolve($url, $pageDir) {}
+    http_response_code(404);
+    echo '404 Not Found';
+  }
 }

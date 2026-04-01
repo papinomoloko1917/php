@@ -6,19 +6,19 @@ use App\Router\Router;
 
 class App
 {
-    private string $url;
-    private string $pageDir;
-    private Router $router;
+  private string $url;
 
-    public function __construct()
-    {
-        $this->url = $url = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-        $this->pageDir = $pageDir = __DIR__ . '/pages';
-        $this->router = new Router();
-    }
+  private array $routes = [];
 
-    public function run()
-    {
-        $this->router->resolve($this->url, $this->pageDir);
-    }
+  public function __construct(private Router $router)
+  {
+    $url = rtrim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/', '/');
+    $this->url = $url === '' ? '/' : $url;
+    $this->routes = require __DIR__ . '/routes/routes.php';
+  }
+
+  public function run(): void
+  {
+    $this->router->resolve($this->url, $this->routes);
+  }
 }
