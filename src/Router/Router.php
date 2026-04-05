@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Router;
+
+use App\Http\Request\Request;
 
 class Router
 {
-  public function resolve(string $url, array $routes)
+  public function __construct(
+    private array $routes,
+  ) {}
+  public function resolve(Request $request)
   {
-    foreach ($routes as $route) {
-      if ($url === $route['url']) {
-        include __DIR__ . '/../../public/pages/' . $route['filePath'];
-        exit;
-      }
+    foreach ($this->routes as $route) {
+      if ($route['url'] === $request->uri() && $route['method'] === $request->method()) return $route['handler']();
     }
     http_response_code(404);
-    echo '404 Not Found';
+    return '404 Not Found';
   }
 }
