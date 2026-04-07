@@ -7,14 +7,14 @@ namespace App;
 use App\Http\Request\Request;
 use App\Router\Router;
 
-class App
-{
+class App {
   public function __construct(
     private Router $router,
     private Request $request,
-  ) {}
-  public function run()
-  {
-    $this->router->resolve($this->request);
+  ) {
+  }
+  public function run(): void {
+    $response = $this->router->resolve($this->request);
+    $response->send();
   }
 }
