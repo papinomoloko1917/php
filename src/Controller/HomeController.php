@@ -6,6 +6,6 @@ namespace App\Controller;
 
 class HomeController {
     public function index(): void {
-        require dirname(__DIR__, 2) . '/public/pages/home.php';
+        require dirname(__DIR__, 2) . '/resources/views/home.php';
     }
 }

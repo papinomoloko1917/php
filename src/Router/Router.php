@@ -7,13 +7,13 @@ namespace App\Router;
 use App\Request\Request;
 use RuntimeException;
 
-class Router {
+class Router implements RouterInterface {
     public function __construct(
         private Request $request,
         private array $routes,
     ) {
     }
-    public function resolve() {
+    public function resolve(): mixed {
         foreach ($this->routes as $route) {
             if (
                 $route->path() === $this->request->path() &&
@@ -25,7 +25,7 @@ class Router {
         http_response_code(404);
         throw new RuntimeException("Путь {$this->request->path()} или метод {$this->request->method()} не найдены");
     }
-    private function dispatch($handler) {
+    private function dispatch($handler): mixed {
         if (count($handler) == 2) {
             [$controllerClass, $method] = $handler;
         } else {
@@ -38,7 +38,7 @@ class Router {
         $controller = new $controllerClass();
 
         if (!method_exists($controller, $method)) {
-            throw new RuntimeException("Класс {$method} не найден");
+            throw new RuntimeException("Метод {$method} не найден в классе {$controllerClass}");
         }
         return $controller->$method();
     }
