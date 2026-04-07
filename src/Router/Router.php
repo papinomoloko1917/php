@@ -4,50 +4,42 @@ declare(strict_types=1);
 
 namespace App\Router;
 
-use App\Http\Request\Request;
+use App\Request\Request;
 use RuntimeException;
-use App\Http\Response\Response;
-use App\Route\Route;
 
 class Router {
-  /**
-   * @param Route[] $routes
-   */
-  public function __construct(
-    private array $routes,
-  ) {
-  }
-  public function resolve(Request $request): Response {
-    foreach ($this->routes as $route) {
-      if ($route->path() === $request->path() && $route->method() === $request->method()) {
-        return $this->dispatch($route->handler(), $request);
-      }
+    public function __construct(
+        private Request $request,
+        private array $routes,
+    ) {
     }
-    return new Response('404 Not Found', 404);
-  }
-
-  private function dispatch(array $handler, Request $request): Response {
-
-    if (count($handler) !== 2) {
-      throw new RuntimeException('Некорректный обработчик маршрута');
+    public function resolve() {
+        foreach ($this->routes as $route) {
+            if (
+                $route->path() === $this->request->path() &&
+                $route->method() === $this->request->method()
+            ) {
+                return $this->dispatch($route->handler());
+            }
+        }
+        http_response_code(404);
+        throw new RuntimeException("Путь {$this->request->path()} или метод {$this->request->method()} не найдены");
     }
+    private function dispatch($handler) {
+        if (count($handler) == 2) {
+            [$controllerClass, $method] = $handler;
+        } else {
+            throw new RuntimeException("Некорректный обработик {$handler}");
+        }
+        if (!class_exists($controllerClass)) {
+            throw new RuntimeException("Класс {$controllerClass} не найден");
+        }
 
-    [$controllerClass, $method] = $handler;
+        $controller = new $controllerClass();
 
-    if (!class_exists($controllerClass)) {
-      throw new RuntimeException("Контроллер {$controllerClass} не найден");
+        if (!method_exists($controller, $method)) {
+            throw new RuntimeException("Класс {$method} не найден");
+        }
+        return $controller->$method();
     }
-    $controller = new $controllerClass();
-
-    if (!method_exists($controller, $method)) {
-      throw new RuntimeException("Метод {$method} контроллера {$controllerClass} не найден");
-    }
-
-    $response = $controller->$method($request);
-
-    if (!$response instanceof Response) {
-      throw new RuntimeException('Контроллер должен возвращать объект Response');
-    }
-    return $response;
-  }
 }
