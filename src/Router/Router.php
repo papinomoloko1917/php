@@ -9,8 +9,8 @@ use RuntimeException;
 
 class Router implements RouterInterface {
     public function __construct(
-        private Request $request,
         private array $routes,
+        private Request $request,
     ) {
     }
     public function resolve(): mixed {
@@ -22,23 +22,19 @@ class Router implements RouterInterface {
                 return $this->dispatch($route->handler());
             }
         }
-        http_response_code(404);
-        throw new RuntimeException("Путь {$this->request->path()} или метод {$this->request->method()} не найдены");
+        throw new RuntimeException("Не удалось найти маршрут");
     }
     private function dispatch($handler): mixed {
-        if (count($handler) == 2) {
-            [$controllerClass, $method] = $handler;
-        } else {
-            throw new RuntimeException("Некорректный обработик {$handler}");
+        if (empty($handler)) {
+            throw new RuntimeException('Обработчик не найден');
         }
-        if (!class_exists($controllerClass)) {
-            throw new RuntimeException("Класс {$controllerClass} не найден");
+        [$targetController, $method] = $handler;
+        if (!class_exists($targetController)) {
+            throw new RuntimeException("Класс {$targetController} не найден");
         }
-
-        $controller = new $controllerClass();
-
+        $controller = new $targetController();
         if (!method_exists($controller, $method)) {
-            throw new RuntimeException("Метод {$method} не найден в классе {$controllerClass}");
+            throw new RuntimeException("Метод {$method} не найден");
         }
         return $controller->$method();
     }

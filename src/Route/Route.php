@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Route;
 
 final class Route {
@@ -9,13 +11,13 @@ final class Route {
         private readonly array $handler,
     ) {
     }
-    public function path() {
+    public function path(): string {
         return $this->path;
     }
-    public function method() {
+    public function method(): string {
         return $this->method;
     }
-    public function handler() {
+    public function handler(): array {
         return $this->handler;
     }
 }

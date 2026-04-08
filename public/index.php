@@ -2,20 +2,18 @@
 
 declare(strict_types=1);
 
-use App\App;
+$bootstrap = require_once dirname(__DIR__) . '/bootstrap/bootstrap.php';
+
 use App\Request\Request;
 use App\Router\Router;
+use App\App;
+use App\Route\Route;
 
-$rootPath = dirname(__DIR__);
-
-require_once $rootPath . '/bootstrap/bootstrap.php';
-
-$routes = require_once $rootPath . '/src/routes/web.php';
-
+// Собираем приложение
 $request = Request::fromGlobals();
-
-$router = new Router($request, $routes);
-
+$routes = require dirname(__DIR__) . '/src/routes/web.php';
+$router = new Router($routes, $request);
 $app = new App($router);
 
-$app->run();
+// Запускаем приложение
+echo $app->run();

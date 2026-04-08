@@ -11,7 +11,7 @@ class App {
         private Router $router,
     ) {
     }
-    public function run(): void {
-        $this->router->resolve();
+    public function run(): mixed {
+        return $this->router->resolve();
     }
 }
