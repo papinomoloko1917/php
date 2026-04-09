@@ -14,7 +14,8 @@ class Request {
     public static function fromGlobals(): self {
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
-        $path = rtrim(parse_url($uri, PHP_URL_PATH), '/');
+        $path = parse_url($uri, PHP_URL_PATH);
+        $path = is_string($path) ? rtrim($path, '/') : '';
         $path = $path ?: '/';
 
         return new self(

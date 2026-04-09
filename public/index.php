@@ -11,7 +11,7 @@ use App\Dispatcher\Dispatcher;
 
 // Собираем приложение
 $request = Request::fromGlobals();
-$routes = require dirname(__DIR__) . '/src/routes/web.php';
+$routes = require dirname(__DIR__) . '/routes/web.php';
 $router = new Router($routes, $request);
 $dispatcher = new Dispatcher();
 $app = new App($router, $dispatcher);
