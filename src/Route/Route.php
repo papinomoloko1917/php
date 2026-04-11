@@ -20,6 +20,14 @@ final class Route {
             throw new RouteIncorrectException('Некорректный обработчик маршрута');
         }
     }
+    /** @param array {0: class-string, 0: string} $handler */
+    public static function get(string $path, array $handler): self {
+        return new self($path, 'GET', $handler);
+    }
+    /** @param array {0: class-string, 0: string} $handler */
+    public static function post(string $path, array $handler): self {
+        return new self($path, 'POST', $handler);
+    }
     public function path(): string {
         return $this->path;
     }

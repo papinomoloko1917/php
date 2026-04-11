@@ -7,6 +7,6 @@ use App\Controllers\AboutController;
 use App\Route\Route;
 
 return [
-    new Route('/', 'GET', [HomeController::class, 'index']),
-    new Route('/about', 'GET', [AboutController::class, 'index']),
+    Route::get('/', [HomeController::class, 'index']),
+    Route::get('/about', [AboutController::class, 'index']),
 ];
