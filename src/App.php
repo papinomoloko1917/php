@@ -12,8 +12,8 @@ use Throwable;
 
 class App {
     public function __construct(
-        private RouterInterface $router,
-        private DispatcherInterface $dispatcher,
+        private readonly RouterInterface $router,
+        private readonly DispatcherInterface $dispatcher,
     ) {
     }
     public function run(): void {

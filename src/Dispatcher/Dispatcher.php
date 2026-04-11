@@ -7,23 +7,18 @@ namespace App\Dispatcher;
 use RuntimeException;
 
 final class Dispatcher implements DispatcherInterface {
-  public function __construct() {
-  }
-  public function dispatch(array $handler): mixed {
-    if (count($handler) !== 2) {
-      throw new RuntimeException('Неверный формат обработчика');
+    public function __construct() {
     }
-    [$targetController, $method] = $handler;
-    if (!is_string($targetController) || !is_string($method)) {
-      throw new RuntimeException('Обработчик должен содержать имя класса и метода');
+    /** @param array {0: class-string, 1: string} $handler */
+    public function dispatch(array $handler): mixed {
+        [$controllerClass, $method] = $handler;
+        if (!class_exists($controllerClass)) {
+            throw new RuntimeException("Класс {$controllerClass} не найден");
+        }
+        $controller = new $controllerClass();
+        if (!method_exists($controller, $method)) {
+            throw new RuntimeException("Метод {$method} не найден");
+        }
+        return $controller->{$method}();
     }
-    if (!class_exists($targetController)) {
-      throw new RuntimeException("Класс {$targetController} не найден");
-    }
-    $controller = new $targetController();
-    if (!method_exists($controller, $method)) {
-      throw new RuntimeException("Метод {$method} не найден");
-    }
-    return $controller->$method();
-  }
 }

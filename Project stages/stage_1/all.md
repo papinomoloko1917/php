@@ -123,7 +123,6 @@ class HomeController {
     }
 }
 
-src/Dispatcher/Dispatcher.php
 <?php
 
 declare(strict_types=1);
@@ -133,25 +132,20 @@ namespace App\Dispatcher;
 use RuntimeException;
 
 final class Dispatcher implements DispatcherInterface {
-  public function __construct() {
-  }
-  public function dispatch(array $handler): mixed {
-    if (count($handler) !== 2) {
-      throw new RuntimeException('Неверный формат обработчика');
+    public function __construct() {
     }
-    [$targetController, $method] = $handler;
-    if (!is_string($targetController) || !is_string($method)) {
-      throw new RuntimeException('Обработчик должен содержать имя класса и метода');
+    /** @param array {0: class-string, 1: string} $handler */
+    public function dispatch(array $handler): mixed {
+        [$controllerClass, $method] = $handler;
+        if (!class_exists($controllerClass)) {
+            throw new RuntimeException("Класс {$controllerClass} не найден");
+        }
+        $controller = new $controllerClass();
+        if (!method_exists($controller, $method)) {
+            throw new RuntimeException("Метод {$method} не найден");
+        }
+        return $controller->{$method}();
     }
-    if (!class_exists($targetController)) {
-      throw new RuntimeException("Класс {$targetController} не найден");
-    }
-    $controller = new $targetController();
-    if (!method_exists($controller, $method)) {
-      throw new RuntimeException("Метод {$method} не найден");
-    }
-    return $controller->$method();
-  }
 }
 
 src/Dispatcher/DispatcherInterface.php
@@ -240,26 +234,35 @@ class Request {
     }
 }
 
-src/Route/Route.php
 <?php
 
 declare(strict_types=1);
 
 namespace App\Route;
 
+use App\Exceptions\RouteIncorrectException;
+
 final class Route {
     public function __construct(
+        /** @param array {0: class-string, 1: string} $handler */
         private readonly string $path,
         private readonly string $method,
         private readonly array $handler,
     ) {
+        if ($path === '') {
+            throw new RouteIncorrectException('Путь маршрута не может быть пустым');
+        }
+        if (count($handler) !== 2 || !is_string($handler[0]) || !is_string($handler[1])) {
+            throw new RouteIncorrectException('Некорректный обработчик маршрута');
+        }
     }
     public function path(): string {
         return $this->path;
     }
     public function method(): string {
-        return $this->method;
+        return strtoupper($this->method);
     }
+    /** @return array {0: class-string, 1: string} */
     public function handler(): array {
         return $this->handler;
     }
@@ -318,7 +321,6 @@ interface RouterInterface
   public function resolve(): Route;
 }
 
-src/App.php
 <?php
 
 declare(strict_types=1);
@@ -326,24 +328,32 @@ declare(strict_types=1);
 namespace App;
 
 use App\Dispatcher\DispatcherInterface;
+use App\Exceptions\MethodNotAllowedException;
+use App\Exceptions\RouteNotFoundException;
 use App\Router\RouterInterface;
 use Throwable;
 
 class App {
-  public function __construct(
-    private RouterInterface $router,
-    private DispatcherInterface $dispatcher,
-  ) {
-  }
-  public function run(): void {
-    try {
-      $route = $this->router->resolve();
-      $this->dispatcher->dispatch($route->handler());
-    } catch (Throwable $e) {
-      http_response_code(500);
-      echo $e->getMessage();
+    public function __construct(
+        private readonly RouterInterface $router,
+        private readonly DispatcherInterface $dispatcher,
+    ) {
     }
-  }
+    public function run(): void {
+        try {
+            $route = $this->router->resolve();
+            $this->dispatcher->dispatch($route->handler());
+        } catch (RouteNotFoundException $e) {
+            http_response_code(404);
+            echo '404 Not Found';
+        } catch (MethodNotAllowedException $e) {
+            http_response_code(405);
+            echo '405 Method Not Allowed';
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo '500 Internal Server Error';
+        }
+    }
 }
 
 composer.json
