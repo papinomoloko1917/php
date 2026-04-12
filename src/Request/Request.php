@@ -6,9 +6,9 @@ namespace App\Request;
 
 class Request {
     public function __construct(
-        private string $uri,
-        private string $method,
-        private string $path,
+        private readonly string $uri,
+        private readonly string $method,
+        private readonly string $path,
     ) {
     }
     public static function fromGlobals(): self {

@@ -86,8 +86,8 @@ use App\Controllers\AboutController;
 use App\Route\Route;
 
 return [
-    new Route('/', 'GET', [HomeController::class, 'index']),
-    new Route('/about', 'GET', [AboutController::class, 'index']),
+    Route::get('/', [HomeController::class, 'index']),
+    Route::get('/about', [AboutController::class, 'index']),
 ];
 
 bootstrap/bootstrap.php
@@ -234,6 +234,8 @@ class Request {
     }
 }
 
+src/Route/Route.php
+
 <?php
 
 declare(strict_types=1);
@@ -255,6 +257,14 @@ final class Route {
         if (count($handler) !== 2 || !is_string($handler[0]) || !is_string($handler[1])) {
             throw new RouteIncorrectException('Некорректный обработчик маршрута');
         }
+    }
+    /** @param array {0: class-string, 0: string} $handler */
+    public static function get(string $path, array $handler): self {
+        return new self($path, 'GET', $handler);
+    }
+    /** @param array {0: class-string, 0: string} $handler */
+    public static function post(string $path, array $handler): self {
+        return new self($path, 'POST', $handler);
     }
     public function path(): string {
         return $this->path;
