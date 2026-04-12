@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Route;
+namespace App\Routing\Route;
 
 use App\Exceptions\RouteIncorrectException;
 
