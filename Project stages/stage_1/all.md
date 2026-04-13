@@ -1,5 +1,59 @@
 Я разрабатываю учебный проект для себя. Проект предназначен для изучения возможностей языка php. Изучи первый этап проекта, дай оценку и дай рекомендации к улучшению проекта. А также мне нужны шаги для реализации второго шага проекта.
 
+# На данном этаме архитектура приложения такая:
+
+.
+├── Project stages
+│ ├── stage_1
+│ │ ├── all.md
+│ │ ├── architecture_stage_1.md
+│ │ └── stage_1.md
+│ └── stage_2
+│ └── stage_2.md
+├── README.md
+├── bootstrap
+│ └── bootstrap.php
+├── composer.json
+├── composer.lock
+├── docker-compose.yml
+├── nginx
+│ └── default.conf
+├── php
+│ └── Dockerfile
+├── public
+│ └── index.php
+├── resources
+│ ├── layouts
+│ │ └── app.layout.php
+│ └── views
+│ ├── about.php
+│ ├── errors
+│ │ └── errorsPage.php
+│ └── home.php
+├── routes
+│ └── web.php
+└── src
+├── App.php
+├── Controllers
+│ ├── AboutController.php
+│ ├── Controller.php
+│ └── HomeController.php
+├── Dispatcher
+│ ├── Dispatcher.php
+│ └── DispatcherInterface.php
+├── ErrorHandler
+│ └── ExceptionHandler.php
+├── Exceptions
+│ ├── MethodNotAllowedException.php
+│ ├── RouteIncorrectException.php
+│ └── RouteNotFoundException.php
+├── Request
+│ └── Request.php
+└── Routing
+├── Route.php
+├── Router.php
+└── RouterInterface.php
+
 Stage #1
 
 # На первом шаге проекта необходимо реализовать:
@@ -14,70 +68,17 @@ Stage #1
 - Создать класс Router который будет резолвить маршруты, также роутер должен различать 404 и 405 ошибки;
 - Создать класс Dispatcher который будет принимать обработчик и реализовывать метод этого обработчика;
 - Создать контроллеры с методами index() для отображения контента на странице;
-- Создать класс ErrorHandler для централизованной обработки ошибок в App;
+- Создать класс ExceptionHandler для централизованной обработки ошибок в App;
 - Ввести константу окружения (debug-флаг) APP_DEBUG, с помошью которой можно включать/отключать dev-режим, данную константу можно расположить в bootstrap.php;
 
 **_Примечание_**
 
 - Разработка проекта должна вестись исключительно с включенным строгим режимом - declare(strict type=1);
 - На данном этапе нужно подготовить общий layout, но пока не реализовывать его;
-
-Project stages/stage_1/architecture_stage_1.md
-# На данном этаме архитектура приложения такая:
-.
-├── Project stages
-│   ├── stage_1
-│   │   ├── all.md
-│   │   ├── architecture_stage_1.md
-│   │   └── stage_1.md
-│   └── stage_2
-│       └── stage_2.md
-├── README.md
-├── bootstrap
-│   └── bootstrap.php
-├── composer.json
-├── composer.lock
-├── docker-compose.yml
-├── nginx
-│   └── default.conf
-├── php
-│   └── Dockerfile
-├── public
-│   └── index.php
-├── resources
-│   ├── layouts
-│   │   └── app.layout.php
-│   └── views
-│       ├── about.php
-│       ├── errors
-│       │   └── errorsPage.php
-│       └── home.php
-├── routes
-│   └── web.php
-└── src
-    ├── App.php
-    ├── Controllers
-    │   ├── AboutController.php
-    │   └── HomeController.php
-    ├── Dispatcher
-    │   ├── Dispatcher.php
-    │   └── DispatcherInterface.php
-    ├── ErrorHandler
-    │   └── ExceptionHandler.php
-    ├── Exceptions
-    │   ├── MethodNotAllowedException.php
-    │   ├── RouteIncorrectException.php
-    │   └── RouteNotFoundException.php
-    ├── Request
-    │   └── Request.php
-    └── Routing
-        ├── Route
-        │   └── Route.php
-        └── Router
-            ├── Router.php
-            └── RouterInterface.php
+- В рамках первого этапа реализовывать класс Response не нужно.
 
 bootstrap/bootstrap.php
+
 <?php
 
 declare(strict_types=1);
@@ -98,7 +99,7 @@ ini_set('display_errors', APP_DEBUG ? '1' : '0');
 
 use App\Request\Request;
 use App\ErrorHandler\ExceptionHandler;
-use App\Routing\Router\Router;
+use App\Routing\Router;
 use App\Dispatcher\Dispatcher;
 use App\App;
 
@@ -122,7 +123,7 @@ namespace App;
 
 use App\Dispatcher\DispatcherInterface;
 use App\ErrorHandler\ExceptionHandler;
-use App\Routing\Router\RouterInterface;
+use App\Routing\RouterInterface;
 use Throwable;
 
 class App {
@@ -142,50 +143,12 @@ class App {
     }
 }
 
-routes/web.php
+src/Routing/Route.php
 <?php
 
 declare(strict_types=1);
 
-use App\Controllers\HomeController;
-use App\Controllers\AboutController;
-use App\Routing\Route\Route;
-
-return [
-    Route::get('/', [HomeController::class, 'index']),
-    Route::get('/about', [AboutController::class, 'index']),
-    Route::get('/test', function () {
-        echo '12345';
-    }),
-];
-
-
-composer.json
-{
-    "name": "ninja/php",
-    "autoload": {
-        "psr-4": {
-            "App\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "papinomoloko1917",
-            "email": "varivodamax88@gmail.com"
-        }
-    ],
-    "require-dev": {
-        "symfony/var-dumper": "^7.4",
-        "laravel/pint": "^1.29"
-    }
-}
-
-src/Routing/Route/Route.php
-<?php
-
-declare(strict_types=1);
-
-namespace App\Routing\Route;
+namespace App\Routing;
 
 use App\Exceptions\RouteIncorrectException;
 use Closure;
@@ -204,7 +167,9 @@ final class Route {
         if ($path === '') {
             throw new RouteIncorrectException('Путь маршрута не может быть пустым');
         }
-        $this->isValidHandler($this->handler());
+        if (!$this->validateHandler($this->handler)) {
+            throw new RouteIncorrectException('Некорректный обработчик маршрута');
+        }
     }
     /** @param array {0: class-string, 1: string} $handler */
     public static function get(string $path, array|Closure $handler): self {
@@ -224,26 +189,26 @@ final class Route {
     public function handler(): array|Closure {
         return $this->handler;
     }
-    //Поддержка функций в контроллере
-    private function isValidHandler(array|Closure $handler): bool {
+    /** * @param array{0:class-string, 1:string}|Closure $handler */
+    private function validateHandler(array|Closure $handler): bool {
         if ($handler instanceof Closure) {
             return true;
         }
-        return count($handler) === 2
+        return isset($handler[0], $handler[1])
             && is_string($handler[0])
             && is_string($handler[1]);
     }
 }
 
-src/Routing/Router/Router.php
+src/Routing/Router.php
 <?php
 
 declare(strict_types=1);
 
-namespace App\Routing\Router;
+namespace App\Routing;
 
 use App\Request\Request;
-use App\Routing\Route\Route;
+use App\Routing\Route;
 use App\Exceptions\RouteIncorrectException;
 use App\Exceptions\RouteNotFoundException;
 use App\Exceptions\MethodNotAllowedException;
@@ -274,20 +239,18 @@ class Router implements RouterInterface {
         throw new RouteNotFoundException('Маршрут не найден');
     }
 }
-
-src/Routing/Router/RouterInterface.php
+src/Routing/RouterInterface.php
 <?php
 
 declare(strict_types=1);
 
-namespace App\Routing\Router;
+namespace App\Routing;
 
-use App\Routing\Route\Route;
+use App\Routing\Route;
 
 interface RouterInterface {
     public function resolve(): Route;
 }
-
 src/Request/Request.php
 <?php
 
@@ -325,10 +288,7 @@ class Request {
         return $this->path;
     }
 }
-
 src/Exceptions/MethodNotAllowedException.php
-src/Exceptions/RouteIncorrectException.php
-src/Exceptions/RouteNotFoundException.php
 <?php
 
 declare(strict_types=1);
@@ -340,6 +300,7 @@ use RuntimeException;
 final class MethodNotAllowedException extends RuntimeException {
 }
 
+src/Exceptions/RouteIncorrectException.php
 <?php
 
 declare(strict_types=1);
@@ -351,6 +312,7 @@ use RuntimeException;
 final class RouteIncorrectException extends RuntimeException {
 }
 
+src/Exceptions/RouteNotFoundException.php
 <?php
 
 declare(strict_types=1);
@@ -361,7 +323,6 @@ use RuntimeException;
 
 final class RouteNotFoundException extends RuntimeException {
 }
-
 src/ErrorHandler/ExceptionHandler.php
 <?php
 
@@ -419,7 +380,6 @@ final class ExceptionHandler {
         require $viewPath;
     }
 }
-
 src/Dispatcher/Dispatcher.php
 <?php
 
@@ -462,7 +422,6 @@ use Closure;
 interface DispatcherInterface {
     public function dispatch(array|Closure $handler): mixed;
 }
-
 src/Controllers/AboutController.php
 <?php
 
@@ -470,11 +429,32 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-class AboutController {
+class AboutController extends Controller {
     public function index(): void {
-        require dirname(__DIR__, 2) . '/resources/views/about.php';
+        $this->view('about');
     }
 }
+
+src/Controllers/Controller.php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use RuntimeException;
+
+abstract class Controller {
+    protected function view(string $template, array $data = []): void {
+        $viewPath = dirname(__DIR__, 2) . "/resources/views/{$template}.php";
+        if (!file_exists($viewPath)) {
+            throw new RuntimeException('Файла не существует');
+        }
+        extract($data, EXTR_SKIP);
+        require $viewPath;
+    }
+}
+
 
 src/Controllers/HomeController.php
 <?php
@@ -483,35 +463,87 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-class HomeController {
+class HomeController extends Controller {
     public function index(): void {
-        require dirname(__DIR__, 2) . '/resources/views/home.php';
+        $this->view('home');
     }
 }
+routes/web.php
+<?php
 
+declare(strict_types=1);
+
+use App\Controllers\HomeController;
+use App\Controllers\AboutController;
+use App\Routing\Route;
+
+return [
+    Route::get('/', [HomeController::class, 'index']),
+    Route::get('/about', [AboutController::class, 'index']),
+    Route::get('/test', function () {
+        echo '12345';
+    }),
+];
+resources/layouts/app.layout.php
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+
+<body>
+    <main>
+        <div class="container">
+
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+
+</html>
 resources/views/errors/errorsPage.php
 <h1><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></h1>
 
-<?php
-if (isset($message)) {
-    $file = 'Файл: ' . $file;
-    $line = 'Строка №' . $line;
+<?php if (isset($message)): ?>
 
-    echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-    echo '<pre>';
-    echo htmlspecialchars($file, ENT_QUOTES, 'UTF-8');
-    echo '<pre>';
-    echo htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
-}
-?>
+    <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
+    <pre><?= htmlspecialchars('Файл: ' . $file . PHP_EOL . 'Строка: ' . $line, ENT_QUOTES, 'UTF-8') ?></pre>
+
+<?php endif; ?>
 
 resources/views/about.php
+
 <h1 style="color: red;">
     About page
 </h1>
-
 resources/views/home.php
 <h1 style="color: black;">
     Home page
 </h1>
+nginx/default.conf
+server {
+    listen 80;
+    server_name localhost;
+    root /var/www/html/public;
+    index index.php index.html;
 
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+}

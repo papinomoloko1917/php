@@ -9,13 +9,13 @@ ini_set('display_errors', APP_DEBUG ? '1' : '0');
 
 use App\Request\Request;
 use App\ErrorHandler\ExceptionHandler;
-use App\Routing\Router\Router;
+use App\Routing\Router;
 use App\Dispatcher\Dispatcher;
 use App\App;
 
 // Собираем приложение
 $request = Request::fromGlobals();
-$routes = require dirname(__DIR__) . '/routes/web.php';
+$routes = require BASE_PATH . '/routes/web.php';
 $router = new Router($routes, $request);
 $dispatcher = new Dispatcher();
 $exceptionHandler = new ExceptionHandler(APP_DEBUG);

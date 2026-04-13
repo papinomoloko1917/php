@@ -6,7 +6,7 @@ namespace App;
 
 use App\Dispatcher\DispatcherInterface;
 use App\ErrorHandler\ExceptionHandler;
-use App\Routing\Router\RouterInterface;
+use App\Routing\RouterInterface;
 use Throwable;
 
 class App {

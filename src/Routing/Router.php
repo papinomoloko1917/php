@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Routing\Router;
+namespace App\Routing;
 
 use App\Request\Request;
-use App\Routing\Route\Route;
+use App\Routing\Route;
 use App\Exceptions\RouteIncorrectException;
 use App\Exceptions\RouteNotFoundException;
 use App\Exceptions\MethodNotAllowedException;

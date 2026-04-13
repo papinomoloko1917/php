@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Routing\Route;
+namespace App\Routing;
 
 use App\Exceptions\RouteIncorrectException;
 use Closure;
@@ -21,7 +21,9 @@ final class Route {
         if ($path === '') {
             throw new RouteIncorrectException('Путь маршрута не может быть пустым');
         }
-        $this->isValidHandler($this->handler());
+        if (!$this->validateHandler($this->handler)) {
+            throw new RouteIncorrectException('Некорректный обработчик маршрута');
+        }
     }
     /** @param array {0: class-string, 1: string} $handler */
     public static function get(string $path, array|Closure $handler): self {
@@ -41,12 +43,12 @@ final class Route {
     public function handler(): array|Closure {
         return $this->handler;
     }
-    //Поддержка функций в контроллере
-    private function isValidHandler(array|Closure $handler): bool {
+    /** * @param array{0:class-string, 1:string}|Closure $handler */
+    private function validateHandler(array|Closure $handler): bool {
         if ($handler instanceof Closure) {
             return true;
         }
-        return count($handler) === 2
+        return isset($handler[0], $handler[1])
             && is_string($handler[0])
             && is_string($handler[1]);
     }

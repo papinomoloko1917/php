@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+define('BASE_PATH', dirname(__DIR__));
+define('APP_DEBUG', true); //debug-флаг
 
-const APP_DEBUG = true; //debug-флаг
+require_once BASE_PATH . '/vendor/autoload.php';
