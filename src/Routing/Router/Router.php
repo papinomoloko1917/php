@@ -11,6 +11,7 @@ use App\Exceptions\RouteNotFoundException;
 use App\Exceptions\MethodNotAllowedException;
 
 class Router implements RouterInterface {
+    /** @param list<Route> $routes */
     public function __construct(
         private array $routes,
         private Request $request,
