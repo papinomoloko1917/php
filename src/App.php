@@ -6,22 +6,23 @@ namespace App;
 
 use App\Dispatcher\DispatcherInterface;
 use App\ErrorHandler\ExceptionHandler;
+use App\Http\Response;
 use App\Routing\RouterInterface;
 use Throwable;
 
-class App {
+final class App {
     public function __construct(
         private readonly RouterInterface $router,
         private readonly DispatcherInterface $dispatcher,
         private readonly ExceptionHandler $exceptionHandler,
     ) {
     }
-    public function run(): void {
+    public function run(): Response {
         try {
             $route = $this->router->resolve();
-            $this->dispatcher->dispatch($route->handler());
+            return $this->dispatcher->dispatch($route->handler());
         } catch (Throwable $e) {
-            $this->exceptionHandler->handle($e);
+            return $this->exceptionHandler->handle($e);
         }
     }
 }

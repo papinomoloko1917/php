@@ -1,5 +1,7 @@
 # На данном этаме архитектура приложения такая:
 
+index.php -> Request -> Router -> Dispatcher -> Controller -> ExceptionHandler
+
 .
 ├── Project stages
 │ ├── stage_1

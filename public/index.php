@@ -16,10 +16,13 @@ use App\App;
 // Собираем приложение
 $request = Request::fromGlobals();
 $routes = require BASE_PATH . '/routes/web.php';
+
 $router = new Router($routes, $request);
 $dispatcher = new Dispatcher();
 $exceptionHandler = new ExceptionHandler(APP_DEBUG);
 
 $app = new App($router, $dispatcher, $exceptionHandler); // Инициализируем приложение
 
-$app->run(); // Запускаем приложение
+$response = $app->run(); // Запускаем приложение
+
+$response->send();
