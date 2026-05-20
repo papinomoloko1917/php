@@ -1,0 +1,4 @@
+[2026-05-20T15:15:43+03:00] accepted camera=front-door event_type=motion object_type=human event_key=front-door|motion|human|2026-05-20 22:13
+[2026-05-20T15:20:12+03:00] duplicate camera=front-door event_type=motion object_type=human event_key=front-door|motion|human|2026-05-20 22:13
+[2026-05-20T15:23:38+03:00] duplicate camera=front-door event_type=motion object_type=human event_key=front-door|motion|human|2026-05-20 22:13
+[2026-05-20T15:23:44+03:00] duplicate camera=front-door event_type=motion object_type=human event_key=front-door|motion|human|2026-05-20 22:13
