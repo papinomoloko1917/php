@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Request;
+
+class Request
+{
+    public function __construct(
+        private readonly string $uri,
+        private readonly string $method,
+        private readonly string $path,
+    ) {
+    }
+    public static function fromGlobals(): self
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $path = parse_url($uri, PHP_URL_PATH);
+        $path = $path ? rtrim($path, '/') : '/';
+        $path = $path ?: '/';
+
+        return new self(
+            uri: $uri,
+            method: $method,
+            path: $path,
+        );
+    }
+    public function uri(): string
+    {
+        return $this->uri;
+    }
+    public function method(): string
+    {
+        return $this->method;
+    }
+    public function path(): string
+    {
+        return $this->path;
+    }
+}
