@@ -18,7 +18,7 @@ class Route
     {
         return new self(
             $path,
-            $method = 'GET',
+            'GET',
             $handle,
         );
     }
@@ -26,20 +26,20 @@ class Route
     {
         return new self(
             $path,
-            $method = 'POST',
+            'POST',
             $handle,
         );
     }
     public function path(): string
     {
-        return $this->path();
+        return $this->path;
     }
     public function method(): string
     {
-        return $this->method();
+        return $this->method;
     }
     public function handle(): array|Closure
     {
-        return $this->handle();
+        return $this->handle;
     }
 }
