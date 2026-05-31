@@ -18,7 +18,13 @@ class Validator
                 continue;
             }
             $value = $data[$field];
-            dump($value);
+
+            $rules = explode('|', $ruleArray[0]);
+            foreach ($rules as $rule) {
+                if (str_contains($rule, ':')) {
+                    [$rule,$value] = explode(':', $rule);
+                }
+            }
         }
 
     }
