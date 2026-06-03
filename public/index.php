@@ -1,16 +1,9 @@
 <?php
 
-declare(strict_types=1);
+use Uri\Rfc3986\Uri;
 
-define('APP_PATH', dirname(__DIR__));
+$url = Uri::parse($_SERVER['REQUEST_URI']);
 
-require APP_PATH . '/vendor/autoload.php';
+$path = $url->getPath();
 
-use App\App;
-use App\Container\Container;
-
-$container = new Container();
-
-$app = new App($container);
-
-$app->run();
+echo $path;
