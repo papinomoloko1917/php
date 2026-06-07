@@ -8,6 +8,14 @@ define('APP_PATH', dirname(__DIR__));
 
 require APP_PATH . '/vendor/autoload.php';
 
-$database = Database::fromEnv();
+$db = Database::fromEnv();
 
-$conn = $database->conn();
+$pdo = $db->conn();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+$sql = 'CREATE TABLE products (
+id INT AUTO_INCREMENT PRIMARY KEY,
+title VARCHAR(250) NOT NULL
+)';
+
+$pdo->exec($sql);
