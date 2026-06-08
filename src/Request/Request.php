@@ -56,23 +56,23 @@ class Request
 
         return rtrim($path, '/') ?: '/';
     }
-    private function server()
+    public function server(): array
     {
         return $this->server;
     }
-    private function post()
+    public function post(): array
     {
         return $this->post;
     }
-    private function get()
+    public function get(): array
     {
         return $this->get;
     }
-    private function method()
+    public function method(): string
     {
         return $this->method;
     }
-    private function path()
+    public function path(): string
     {
         return $this->path;
     }
