@@ -76,4 +76,11 @@ class Request
     {
         return $this->path;
     }
+    public function input(string $name): ?string
+    {
+        if (isset($this->post[$name])) {
+            return $this->post[$name];
+        }
+        return null;
+    }
 }

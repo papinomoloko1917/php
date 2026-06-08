@@ -2,33 +2,48 @@
 
 declare(strict_types=1);
 
-namespace App\Product;
+namespace App\Controller;
 
 use App\Database\Database;
+use App\Request\Request;
+use App\View\View;
 
-class Product
+class ProductController extends Controller
 {
     public function __construct(
-        private readonly Database $db
+        protected readonly View $view,
+        private readonly Request $request,
+        private readonly Database $database,
     ) {
     }
-    public function addProduct(string $title, string $description, float $price): void
+    public function addProduct()
     {
+        return $this->view('product/add_product');
+    }
+    public function storeProduct(): void
+    {
+        $title = $this->request->input('title');
+        $description = $this->request->input('description');
+        $price = $this->request->input('price');
+
         if (!$this->tableExists('products')) {
             $this->addTable();
         }
         $sql = "INSERT INTO products (title, description, price) VALUES (:title, :description, :price)";
-        $stmt = $this->db->conn()->prepare($sql);
+        $stmt = $this->database->conn()->prepare($sql);
         $stmt->execute([
             ':title' => $title,
             ':description' => $description,
             ':price' => $price
         ]);
+
+        header('Location: /');
+        exit;
     }
     private function tableExists(string $tableName): bool
     {
         $sql = 'SHOW TABLES LIKE :table';
-        $stmt = $this->db->conn()->prepare($sql);
+        $stmt = $this->database->conn()->prepare($sql);
         $stmt->execute([':table' => $tableName]);
         return $stmt->rowCount() > 0;
     }
@@ -41,6 +56,6 @@ class Product
         price DECIMAL(10,2),
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )';
-        $this->db->conn()->exec($sql);
+        $this->database->conn()->exec($sql);
     }
 }

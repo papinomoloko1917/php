@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Container;
 
 use App\Database\Database;
+use App\Dispatcher\Dispatcher;
+use App\Factory\ControllerFactory;
 use App\Product\Product;
 use App\Request\Request;
 use App\Router\Router;
@@ -15,9 +17,10 @@ class Container
     public readonly array $routes;
     public readonly Request $request;
     public readonly Router $router;
+    public readonly Dispatcher $dispatcher;
     public readonly View $view;
     public readonly Database $database;
-    public readonly Product $product;
+    public readonly ControllerFactory $controllerFactory;
 
     public function __construct()
     {
@@ -39,6 +42,12 @@ class Container
 
         $this->database = Database::fromEnv();
 
-        $this->product = new Product($this->database);
+        $this->controllerFactory = new ControllerFactory(
+            $this->view,
+            $this->request,
+            $this->database
+        );
+
+        $this->dispatcher = new Dispatcher($this->controllerFactory);
     }
 }
